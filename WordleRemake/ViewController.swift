@@ -31,11 +31,16 @@ class ViewController: UIViewController {
         textLabel = UILabel()
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.text = "HI"
+        textLabel.numberOfLines = 0
         view.addSubview(textLabel)
         
         currentAnswer = UITextField()
         currentAnswer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(currentAnswer)
+        
+        keyboardLabel = UILabel()
+        keyboardLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(keyboardLabel)
         
         let submit = UIButton(type: .system)//default type
         submit.translatesAutoresizingMaskIntoConstraints = false
@@ -60,7 +65,19 @@ class ViewController: UIViewController {
             textLabel.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: -25),
             
             currentAnswer.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: 25),
-            currentAnswer.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            currentAnswer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            keyboardLabel.topAnchor.constraint(equalTo: currentAnswer.bottomAnchor, constant: 25),
+            
+            submit.topAnchor.constraint(equalTo: keyboardLabel.topAnchor, constant: 25),
+            submit.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
+            submit.heightAnchor.constraint(equalToConstant: 44),
+            submit.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            
+            clear.topAnchor.constraint(equalTo: submit.topAnchor),
+            clear.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
+            clear.heightAnchor.constraint(equalTo: submit.heightAnchor),
+            clear.bottomAnchor.constraint(equalTo: submit.bottomAnchor)
             
             
         ])
