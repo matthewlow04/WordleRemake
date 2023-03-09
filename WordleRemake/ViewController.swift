@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     var keyboardLabel: UILabel!
     var currentAnswer: UITextField!
     var displayBox = [UILabel]()
+    var keyboard = [UIButton]()
 
 
     override func viewDidLoad() {
@@ -25,10 +26,10 @@ class ViewController: UIViewController {
         wordleLabel = UILabel()
         wordleLabel.translatesAutoresizingMaskIntoConstraints = false
         wordleLabel.text = "W O R D L E"
-        wordleLabel.font = UIFont.systemFont(ofSize: 30)
+        wordleLabel.font = UIFont.systemFont(ofSize: 24)
         wordleLabel.textAlignment = .center
         view.addSubview(wordleLabel)
-        
+         
         textLabel = UILabel()
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.numberOfLines = 0
@@ -36,6 +37,7 @@ class ViewController: UIViewController {
         
         currentAnswer = UITextField()
         currentAnswer.translatesAutoresizingMaskIntoConstraints = false
+        currentAnswer.textAlignment = .center
         view.addSubview(currentAnswer)
         
         keyboardLabel = UILabel()
@@ -57,20 +59,26 @@ class ViewController: UIViewController {
         
         
         NSLayoutConstraint.activate([
-            wordleLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 50),
+            
+            wordleLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 25),
             wordleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
     
-            textLabel.topAnchor.constraint(equalTo: wordleLabel.bottomAnchor, constant: 25),
+            textLabel.topAnchor.constraint(equalTo: wordleLabel.bottomAnchor, constant: 10),
             textLabel.widthAnchor.constraint(equalToConstant: 400),
-            textLabel.heightAnchor.constraint(equalToConstant: 475),
-            textLabel.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
+            textLabel.heightAnchor.constraint(equalToConstant: 425),
+            textLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            currentAnswer.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: 25),
+            currentAnswer.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: 10),
             currentAnswer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            currentAnswer.widthAnchor.constraint(equalToConstant: 200),
             
-            keyboardLabel.topAnchor.constraint(equalTo: currentAnswer.bottomAnchor, constant: 25),
+            keyboardLabel.topAnchor.constraint(equalTo: currentAnswer.bottomAnchor,constant: 10),
+            keyboardLabel.widthAnchor.constraint(equalToConstant: 350),
+            keyboardLabel.heightAnchor.constraint(equalToConstant: 170),
+            keyboardLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            submit.topAnchor.constraint(equalTo: keyboardLabel.topAnchor, constant: 25),
+            submit.topAnchor.constraint(equalTo: keyboardLabel.bottomAnchor, constant: 10),
             submit.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -100),
             submit.heightAnchor.constraint(equalToConstant: 44),
             submit.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
@@ -92,7 +100,7 @@ class ViewController: UIViewController {
             for column in 0..<5{
                 
                 let displayLabel = UILabel()
-                let frame = CGRect(x: 25+column*75, y: 25+row*75, width: width, height: height)
+                let frame = CGRect(x: 25+column*75, y: row*75, width: width, height: height)
                 displayLabel.frame = frame
                 displayLabel.backgroundColor = .blue
                 textLabel.addSubview(displayLabel)
@@ -101,8 +109,24 @@ class ViewController: UIViewController {
             
         }
         
+        //make letter buttons
+        let buttonWidth = 30
+        let buttonHeight = 50
+        for row in 0..<3{
+            for column in 0..<9{
+                let letterButton = UIButton(type: .system)
+                let buttonFrame = CGRect(x: column*40, y: row*60, width: buttonWidth, height: buttonHeight)
+                letterButton.frame = buttonFrame
+                letterButton.backgroundColor = .gray
+                keyboardLabel.addSubview(letterButton)
+                keyboard.append(letterButton)
+            }
+        }
+        
         
         textLabel.backgroundColor = .red
+        keyboardLabel.backgroundColor = .red
+        currentAnswer.backgroundColor = .green
         
         
         
