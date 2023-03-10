@@ -11,14 +11,20 @@ class ViewController: UIViewController {
     
     var wordleLabel: UILabel!
     var textLabel: UILabel!
-    var keyboardLabel: UILabel!
     var currentAnswer: UITextField!
     var displayBox = [UILabel]()
     var keyboard = [UIButton]()
+    var recentlyPressed = [UIButton]()
+    var answer: String = "HELLO"
+    var numberOfSubmits = 0
+    
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+       
         
         view = UIView()
         view.backgroundColor = .white
@@ -37,11 +43,14 @@ class ViewController: UIViewController {
         
         currentAnswer = UITextField()
         currentAnswer.translatesAutoresizingMaskIntoConstraints = false
+        currentAnswer.placeholder = "Tap the keyboard"
+        currentAnswer.isUserInteractionEnabled = false
         currentAnswer.textAlignment = .center
         view.addSubview(currentAnswer)
         
-        keyboardLabel = UILabel()
+        let keyboardLabel = UILabel()
         keyboardLabel.translatesAutoresizingMaskIntoConstraints = false
+        keyboardLabel.isUserInteractionEnabled = true
         view.addSubview(keyboardLabel)
         
         let submit = UIButton(type: .system)//default type
@@ -56,14 +65,10 @@ class ViewController: UIViewController {
         clear.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
         view.addSubview(clear)
         
-        
-        
         NSLayoutConstraint.activate([
-            
             wordleLabel.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 25),
             wordleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-    
             textLabel.topAnchor.constraint(equalTo: wordleLabel.bottomAnchor, constant: 10),
             textLabel.widthAnchor.constraint(equalToConstant: 400),
             textLabel.heightAnchor.constraint(equalToConstant: 425),
@@ -87,14 +92,13 @@ class ViewController: UIViewController {
             clear.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 100),
             clear.heightAnchor.constraint(equalTo: submit.heightAnchor),
             clear.bottomAnchor.constraint(equalTo: submit.bottomAnchor)
-            
-            
         ])
         
         //make game display
         
         let width = 50
         let height = 50
+
         
         for row in 0..<6{
             for column in 0..<5{
@@ -102,7 +106,9 @@ class ViewController: UIViewController {
                 let displayLabel = UILabel()
                 let frame = CGRect(x: 25+column*75, y: row*75, width: width, height: height)
                 displayLabel.frame = frame
-                displayLabel.backgroundColor = .blue
+                displayLabel.font = UIFont.systemFont(ofSize: 24)
+                displayLabel.textAlignment = .center
+                displayLabel.backgroundColor = UIColor.lightGray
                 textLabel.addSubview(displayLabel)
                 displayBox.append(displayLabel)
             }
@@ -110,41 +116,86 @@ class ViewController: UIViewController {
         }
         
         //make letter buttons
+        
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+        let alphabetArray = Array(alphabet)
         let buttonWidth = 30
         let buttonHeight = 50
         for row in 0..<3{
             for column in 0..<9{
                 let letterButton = UIButton(type: .system)
+                letterButton.addTarget(self, action: #selector(letterButtonTapped), for: .touchUpInside)
                 let buttonFrame = CGRect(x: column*40, y: row*60, width: buttonWidth, height: buttonHeight)
                 letterButton.frame = buttonFrame
-                letterButton.backgroundColor = .gray
                 keyboardLabel.addSubview(letterButton)
                 keyboard.append(letterButton)
             }
         }
         
-        
-        textLabel.backgroundColor = .red
-        keyboardLabel.backgroundColor = .red
-        currentAnswer.backgroundColor = .green
-        
-        
+        if keyboard.count == alphabetArray.count{
+            for i in 0..<keyboard.count{
+                keyboard[i].setTitle("\(alphabetArray[i])", for: .normal)
+            }
+        }
         
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Stats", style: .plain, target: self, action: #selector(statsOpened))
- 
+
     }
-    
+    @objc func letterButtonTapped(_ sender: UIButton){
+        guard let buttonTitle = sender.titleLabel?.text else{return}
+        currentAnswer.text = currentAnswer.text?.appending(buttonTitle)
+        recentlyPressed.append(sender)
+    }
     @objc func statsOpened(){
         let ac = UIAlertController(title: "Stats", message: "HI", preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "OK", style: .cancel))
         present(ac,animated: true)
     }
     @objc func submitTapped(_ sender: UIButton){
+      
+        guard let guess = currentAnswer?.text else {return}
+        if guess.count != 5{
+            return
+        }
+        var guessArray = Array(guess)
+        var answerArray = Array(answer)
+        
+        for i in 0..<5{
+            var index = (numberOfSubmits*5)+(i)
+            if guessArray[i] == answerArray[i]{
+                displayBox[index].textColor = .green
+            }
+            else if answerArray.contains(guessArray[i]){
+                displayBox[index].textColor = .yellow
+            }
+            else{
+                displayBox[index].textColor = .red
+            }
+            
+            displayBox[index].text = "\(guessArray[i])"
+        }
+        numberOfSubmits += 1
+       
+        
+        if guess == answer{
+            let ac = UIAlertController(title: "You win", message: "Congrats", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+            present(ac, animated: true)
+            return
+        }
+        
+        if numberOfSubmits == 6{
+            let ac = UIAlertController(title: "Game Over", message: "You're out of guesses", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+            present(ac, animated: true)
+            return
+        }
         
     }
     @objc func clearTapped(_ sender: UIButton){
-        
+        currentAnswer.text = ""
+        recentlyPressed.removeAll()
     }
 
 
