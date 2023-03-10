@@ -18,14 +18,9 @@ class ViewController: UIViewController {
     var answer: String = "HELLO"
     var numberOfSubmits = 0
     
-
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-       
-        
+
         view = UIView()
         view.backgroundColor = .white
         
