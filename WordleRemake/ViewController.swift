@@ -5,6 +5,15 @@
 //  Created by Matthew Low on 2023-03-08.
 //
 
+
+/*
+ 1.move code to load game function
+ 2. check if it's an english word
+ 3. get the word from either a txt file or a word generator
+ 4. add stats
+ 
+ */
+
 import UIKit
 
 class ViewController: UIViewController {
@@ -15,12 +24,10 @@ class ViewController: UIViewController {
     var displayBox = [UILabel]()
     var keyboard = [UIButton]()
     var recentlyPressed = [UIButton]()
-    var answer: String = "HELLO"
+    var answer: String = ""
     var numberOfSubmits = 0
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
+    override func loadView() {
         view = UIView()
         view.backgroundColor = .white
         
@@ -135,7 +142,28 @@ class ViewController: UIViewController {
         
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Stats", style: .plain, target: self, action: #selector(statsOpened))
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        loadLevel()
+      
 
+    }
+    
+    func loadLevel(){
+        var wordBank = [String]()
+        let website = "https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt"
+        if let urlString = URL(string: website){
+            if let textContents = try? String (contentsOf: urlString){
+                wordBank += textContents.components(separatedBy: "\n")
+            }
+        }
+        
+        wordBank.shuffle()
+        
+        answer = wordBank[0]
+        
     }
     @objc func letterButtonTapped(_ sender: UIButton){
         guard let buttonTitle = sender.titleLabel?.text else{return}
@@ -153,11 +181,11 @@ class ViewController: UIViewController {
         if guess.count != 5{
             return
         }
-        var guessArray = Array(guess)
-        var answerArray = Array(answer)
+        let guessArray = Array(guess)
+        let answerArray = Array(answer)
         
         for i in 0..<5{
-            var index = (numberOfSubmits*5)+(i)
+            let index = (numberOfSubmits*5)+(i)
             if guessArray[i] == answerArray[i]{
                 displayBox[index].textColor = .green
             }
@@ -181,7 +209,7 @@ class ViewController: UIViewController {
         }
         
         if numberOfSubmits == 6{
-            let ac = UIAlertController(title: "Game Over", message: "You're out of guesses", preferredStyle: .alert)
+            let ac = UIAlertController(title: "Game Over", message: "The answer was \(answer)", preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "OK", style: .cancel))
             present(ac, animated: true)
             return
