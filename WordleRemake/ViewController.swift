@@ -25,6 +25,7 @@ class ViewController: UIViewController {
     var keyboard = [UIButton]()
     var recentlyPressed = [UIButton]()
     var answer: String = ""
+    var winstreak = 0
     var numberOfSubmits = 0
     
     override func loadView() {
@@ -152,6 +153,12 @@ class ViewController: UIViewController {
     }
     
     func loadLevel(){
+        numberOfSubmits = 0
+        currentAnswer.text = ""
+        for i in 0..<displayBox.count{
+            displayBox[i].text = ""
+        }
+        
         var wordBank = [String]()
         let website = "https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt"
         if let urlString = URL(string: website){
@@ -162,7 +169,7 @@ class ViewController: UIViewController {
         
         wordBank.shuffle()
         
-        answer = wordBank[0]
+        answer = wordBank[0].uppercased()
         
     }
     @objc func letterButtonTapped(_ sender: UIButton){
@@ -171,16 +178,26 @@ class ViewController: UIViewController {
         recentlyPressed.append(sender)
     }
     @objc func statsOpened(){
-        let ac = UIAlertController(title: "Stats", message: "HI", preferredStyle: .alert)
+        let ac = UIAlertController(title: "Stats", message: "Your current winstreak is \(winstreak)", preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "OK", style: .cancel))
         present(ac,animated: true)
     }
     @objc func submitTapped(_ sender: UIButton){
       
         guard let guess = currentAnswer?.text else {return}
-        if guess.count != 5{
+        
+        if realWord(word: "\(answer)") == false{
+            error()
+            currentAnswer.text = ""
             return
         }
+        
+        if guess.count != 5{
+            error()
+            currentAnswer.text = ""
+            return
+        }
+        
         let guessArray = Array(guess)
         let answerArray = Array(answer)
         
@@ -202,15 +219,17 @@ class ViewController: UIViewController {
        
         
         if guess == answer{
+            winstreak += 1
             let ac = UIAlertController(title: "You win", message: "Congrats", preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+            ac.addAction(UIAlertAction(title: "OK", style: .default, handler: gameDone))
             present(ac, animated: true)
             return
         }
         
         if numberOfSubmits == 6{
+            winstreak = 0
             let ac = UIAlertController(title: "Game Over", message: "The answer was \(answer)", preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+            ac.addAction(UIAlertAction(title: "OK", style: .default, handler: gameDone))
             present(ac, animated: true)
             return
         }
@@ -219,6 +238,22 @@ class ViewController: UIViewController {
     @objc func clearTapped(_ sender: UIButton){
         currentAnswer.text = ""
         recentlyPressed.removeAll()
+    }
+    
+    func gameDone(action: UIAlertAction){
+        loadLevel()
+    }
+    
+    func realWord(word:String) -> Bool{
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        return misspelledRange.location == NSNotFound
+    }
+    func error(){
+        let ac = UIAlertController(title: "Error", message: "Invalid Input", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(ac, animated: true)
     }
 
 
