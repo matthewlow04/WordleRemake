@@ -6,14 +6,6 @@
 //
 
 
-/*
- 1.move code to load game function
- 2. check if it's an english word
- 3. get the word from either a txt file or a word generator
- 4. add stats
- 
- */
-
 import UIKit
 
 class ViewController: UIViewController {
@@ -186,7 +178,7 @@ class ViewController: UIViewController {
       
         guard let guess = currentAnswer?.text else {return}
         
-        if realWord(word: "\(answer)") == false{
+        if realWord(guess.lowercased()) == false{
             error()
             currentAnswer.text = ""
             return
@@ -216,6 +208,7 @@ class ViewController: UIViewController {
             displayBox[index].text = "\(guessArray[i])"
         }
         numberOfSubmits += 1
+        currentAnswer.text = ""
        
         
         if guess == answer{
@@ -244,10 +237,10 @@ class ViewController: UIViewController {
         loadLevel()
     }
     
-    func realWord(word:String) -> Bool{
+    func realWord(_ word: String) -> Bool{
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: word.utf16.count)
-        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en_US")
         return misspelledRange.location == NSNotFound
     }
     func error(){
